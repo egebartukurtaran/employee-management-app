@@ -1,0 +1,57 @@
+export const tr = {
+    'app.title': 'Çalışan Yönetimi',
+    'employees': 'Çalışanlar',
+    'employee.actions': 'İşlemler',
+    'employees.list': 'Çalışan Listesi',
+    'employees.add': 'Yeni Çalışan Ekle',
+    'employees.edit': 'Çalışanı Düzenle',
+    'employees.delete': 'Çalışanı Sil',
+    'employee.firstName': 'Ad',
+    'employee.lastName': 'Soyad',
+    'employee.dateOfEmployment': 'İşe Başlama Tarihi',
+    'employee.dateOfBirth': 'Doğum Tarihi',
+    'employee.phone': 'Telefon',
+    'employee.email': 'E-posta',
+    'employee.department': 'Departman',
+    'employee.position': 'Pozisyon',
+    'button.save': 'Kaydet',
+    'button.update': 'Güncelle',
+    'button.cancel': 'İptal',
+    'button.proceed': 'Devam Et',
+    'button.delete': 'Sil',
+    'button.edit': 'Düzenle',
+    'confirmation.updateEmployee': 'Bu çalışanı güncellemek istediğinizden emin misiniz?',
+    'confirmation.deleteEmployee': 'Bu çalışanı silmek istediğinizden emin misiniz?',
+    'confirmation.saveChanges': 'Bu değişiklikleri kaydetmek istediğinizden emin misiniz?',
+    'error.required': 'Bu alan zorunludur',
+    'error.email': 'Lütfen geçerli bir e-posta adresi girin',
+    'error.phone': 'Lütfen geçerli bir telefon numarası girin',
+    'positions.junior': 'Junior',
+    'positions.medior': 'Medior',
+    'positions.senior': 'Senior',
+    'departments.analytics': 'Analitik',
+    'departments.tech': 'Teknoloji',
+    'search': 'Ara',
+    'list.empty': 'Kayıt bulunamadı',
+    'add_employees': 'Çalışan Ekle',
+    'cancel': 'İptal',
+    'proceed': 'Devam Et',
+    'select.department': 'Departman Seçiniz',
+    'select.position': 'Pozisyon Seçiniz',
+    'error': {
+        required: 'Bu alan zorunludur',
+        email: 'Geçerli bir e-posta adresi giriniz',
+        phone: 'Geçerli bir telefon numarası giriniz',
+        date: 'GG/AA/YYYY formatında geçerli bir tarih giriniz'
+    },
+
+    // Input field hints
+    hint: {
+        phone: 'Format: +(90) 532 123 45 67',
+        date: 'Format: GG/AA/YYYY'
+    },
+    '404.title': 'Sayfa Bulunamadı',
+    '404.message': 'Aradığınız sayfa kaldırılmış, adı değiştirilmiş veya geçici olarak kullanılamıyor olabilir.',
+    '404.backToHome': 'Ana Sayfaya Dön'
+
+};
