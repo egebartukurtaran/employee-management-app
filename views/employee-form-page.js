@@ -7,19 +7,26 @@ import { t } from '../localization/translations.js';
 import { navigateTo } from '../router.js';
 import { dateMask, phoneMask, validators } from '../utils/input-mask.js';
 
+/**
+ * EmployeeFormPage Component
+ * Handles both creating and editing employee records
+ * Features form validation, input masking, and confirmation dialogs
+ */
 class EmployeeFormPage extends connect(LitElement) {
+    // Define reactive properties
     static get properties() {
         return {
-            id: { type: String },
-            _employee: { type: Object },
-            _isEditMode: { type: Boolean },
-            _showConfirmDialog: { type: Boolean },
-            _formValid: { type: Boolean },
-            _errors: { type: Object },
-            _liveValidation: { type: Boolean }
+            id: { type: String },              // Employee ID when editing
+            _employee: { type: Object },       // Current employee data
+            _isEditMode: { type: Boolean },    // Whether in edit or create mode
+            _showConfirmDialog: { type: Boolean }, // Controls confirmation dialog
+            _formValid: { type: Boolean },     // Overall form validity
+            _errors: { type: Object },         // Validation errors by field
+            _liveValidation: { type: Boolean } // Whether to validate on input
         };
     }
 
+    // Initialize component state
     constructor() {
         super();
         this.id = null;
@@ -31,8 +38,10 @@ class EmployeeFormPage extends connect(LitElement) {
         this._employee = this._getEmptyEmployee();
     }
 
+    // Component styling
     static get styles() {
         return css`
+          /* Root container */
           :host {
             display: block;
             width: 100%;
@@ -40,6 +49,7 @@ class EmployeeFormPage extends connect(LitElement) {
             padding: 16px;
           }
 
+          /* Page header with title */
           .page-header {
             display: flex;
             justify-content: space-between;
@@ -53,6 +63,7 @@ class EmployeeFormPage extends connect(LitElement) {
             font-weight: 500;
           }
 
+          /* Main form container */
           .form-container {
             background-color: white;
             border-radius: 8px;
@@ -65,7 +76,7 @@ class EmployeeFormPage extends connect(LitElement) {
             overflow: hidden; /* Prevent overflow */
           }
 
-          /* Adjusted form row to prevent overflow */
+          /* Form row layout - responsive flex container */
           .form-row {
             display: flex;
             flex-wrap: wrap;
@@ -73,20 +84,20 @@ class EmployeeFormPage extends connect(LitElement) {
             margin-bottom: 10px;
             width: 100%;
             box-sizing: border-box;
-            padding: 0; /* Remove any padding */
-            margin-left: 0; /* Ensure no left margin */
-            margin-right: 0; /* Ensure no right margin */
+            padding: 0;
+            margin-left: 0;
+            margin-right: 0;
           }
 
-          /* Form groups with proper width calculation */
+          /* Form group - individual input container */
           .form-group {
-            flex: 1 1 calc(50% - 12px); /* Calculate width accounting for gap */
-            min-width: 200px; /* Prevent too narrow elements */
-            max-width: 100%; /* Prevent overflow */
+            flex: 1 1 calc(50% - 12px);
+            min-width: 200px;
+            max-width: 100%;
             box-sizing: border-box;
           }
 
-          /* Ensure inputs don't overflow */
+          /* Form input styling */
           input, select {
             width: 100%;
             max-width: 100%;
@@ -99,46 +110,44 @@ class EmployeeFormPage extends connect(LitElement) {
             outline: none;
           }
 
-
-          /* Improved focus states */
+          /* Focus state for inputs */
           input:focus, select:focus {
             border-color: #ff6200;
             box-shadow: 0 0 0 3px rgba(255, 98, 0, 0.1);
-            background-color: #fff; /* White background on focus */
+            background-color: #fff;
           }
 
-          /* Better error styling */
+          /* Error message styling */
           .error {
             color: #e53935;
             font-size: 13px;
             margin-top: 8px;
-            display: block; /* Ensure it's on its own line */
+            display: block;
           }
 
-          /* Improved form buttons section */
+          /* Form buttons container */
           .form-buttons {
             display: flex;
             justify-content: flex-end;
             gap: 16px;
-            margin-top: 40px; /* More space above buttons */
+            margin-top: 40px;
             padding-top: 24px;
             border-top: 1px solid #eee;
           }
 
-          /* Better button styling */
+          /* Button base styling */
           .btn {
-            padding: 14px 28px; /* Larger buttons */
-            border-radius: 6px; /* Slightly more rounded */
+            padding: 14px 28px;
+            border-radius: 6px;
             font-size: 15px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
-            min-width: 120px; /* Minimum width for buttons */
+            min-width: 120px;
             text-align: center;
           }
-          
-          
 
+          /* Primary (accent) button */
           .btn-primary {
             background-color: #ff6200;
             color: white;
@@ -149,6 +158,7 @@ class EmployeeFormPage extends connect(LitElement) {
             background-color: #e55800;
           }
 
+          /* Secondary button */
           .btn-secondary {
             background-color: #f5f5f5;
             color: #333;
@@ -159,29 +169,29 @@ class EmployeeFormPage extends connect(LitElement) {
             background-color: #eaeaea;
           }
 
+          /* Required field indicator */
           .required::after {
             content: " *";
             color: #e53935;
             font-weight: bold;
           }
 
-          /* Input placeholders */
+          /* Placeholder styling */
           ::placeholder {
             color: #aaa;
           }
 
-          /* Improve select styling */
+          /* Custom select dropdown styling */
           select {
             appearance: none;
             background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 16px center; /* Adjusted position */
+            background-position: right 16px center;
             background-size: 16px;
-            padding-right: 48px; /* More space for the dropdown arrow */
+            padding-right: 48px;
           }
 
-          /* Responsive adjustments */
-          /* Responsive adjustments */
+          /* Responsive adjustments for mobile */
           @media (max-width: 768px) {
             .form-group {
               flex: 1 1 100%; /* Full width on small screens */
@@ -194,9 +204,8 @@ class EmployeeFormPage extends connect(LitElement) {
         `;
     }
 
-
-
-    // In employee-form-page.js, update the firstUpdated method to handle the route parameter correctly
+    // Runs after component is first rendered
+    // Extracts employee ID from URL for editing
     firstUpdated() {
         // Check for ID in route params
         // For URL pattern /edit/:id
@@ -222,7 +231,7 @@ class EmployeeFormPage extends connect(LitElement) {
         }
     }
 
-// Fix the error handling in _loadEmployeeData
+    // Loads employee data from store when editing
     _loadEmployeeData() {
         if (!this.id) return;
 
@@ -234,10 +243,11 @@ class EmployeeFormPage extends connect(LitElement) {
         } else {
             // Handle case where employee isn't found
             console.error('Employee not found');
-            navigateTo('/'); // Use navigateTo instead of Router.go
+            navigateTo('/'); // Navigate back to list
         }
     }
 
+    // Creates an empty employee object for new records
     _getEmptyEmployee() {
         return {
             id: null,
@@ -252,6 +262,7 @@ class EmployeeFormPage extends connect(LitElement) {
         };
     }
 
+    // Helper to format Date object to DD/MM/YYYY
     _formatDate(date) {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -259,6 +270,7 @@ class EmployeeFormPage extends connect(LitElement) {
         return `${day}/${month}/${year}`;
     }
 
+    // Connected callback from store - updates when store changes
     stateChanged(state) {
         if (this.id) {
             const employee = state.employees.find(emp => emp.id === this.id);
@@ -269,6 +281,7 @@ class EmployeeFormPage extends connect(LitElement) {
         }
     }
 
+    // Lifecycle method to detect property changes
     update(changedProperties) {
         if (changedProperties.has('id') && this.id) {
             this._isEditMode = true;
@@ -276,6 +289,7 @@ class EmployeeFormPage extends connect(LitElement) {
         super.update(changedProperties);
     }
 
+    // Handles all input changes with field-specific formatting
     _handleInputChange(e) {
         const { name, value } = e.target;
         let maskedValue = value;
@@ -303,6 +317,7 @@ class EmployeeFormPage extends connect(LitElement) {
         }
     }
 
+    // Validates a single field and returns validity
     _validateField(fieldName, value) {
         let errorMessage = null;
 
@@ -342,8 +357,7 @@ class EmployeeFormPage extends connect(LitElement) {
         return !errorMessage;
     }
 
-
-    // Validate entire form
+    // Validates the entire form
     _validateForm() {
         // Start live validation from this point
         this._liveValidation = true;
@@ -361,7 +375,7 @@ class EmployeeFormPage extends connect(LitElement) {
         return isValid;
     }
 
-    // Handle form submission
+    // Form submission handler
     _handleSubmit(e) {
         e.preventDefault();
 
@@ -380,6 +394,7 @@ class EmployeeFormPage extends connect(LitElement) {
         }
     }
 
+    // Confirmation dialog success handler
     _handleConfirm() {
         this._showConfirmDialog = false;
 
@@ -396,14 +411,17 @@ class EmployeeFormPage extends connect(LitElement) {
         navigateTo('/');
     }
 
+    // Confirmation dialog cancel handler
     _handleCancel() {
         this._showConfirmDialog = false;
     }
 
+    // Navigate back to employee list
     _navigateBack() {
         navigateTo('/');
     }
 
+    // Render the component template
     render() {
         return html`
       <div class="page-header">
@@ -412,6 +430,7 @@ class EmployeeFormPage extends connect(LitElement) {
       
       <div class="form-container">
         <form @submit=${this._handleSubmit}>
+          <!-- Name fields -->
           <div class="form-row">
             <div class="form-group">
               <label class="required" for="firstName">${t('employee.firstName')}</label>
@@ -438,6 +457,7 @@ class EmployeeFormPage extends connect(LitElement) {
             </div>
           </div>
           
+          <!-- Date fields -->
           <div class="form-row">
             <div class="form-group">
               <label class="required" for="dateOfEmployment">${t('employee.dateOfEmployment')}</label>
@@ -466,6 +486,7 @@ class EmployeeFormPage extends connect(LitElement) {
             </div>
           </div>
           
+          <!-- Contact information -->
           <div class="form-row">
             <div class="form-group">
               <label class="required" for="phone">${t('employee.phone')}</label>
@@ -493,6 +514,7 @@ class EmployeeFormPage extends connect(LitElement) {
             </div>
           </div>
           
+          <!-- Job information -->
           <div class="form-row">
             <div class="form-group">
               <label class="required" for="department">${t('employee.department')}</label>
@@ -526,6 +548,7 @@ class EmployeeFormPage extends connect(LitElement) {
             </div>
           </div>
           
+          <!-- Form action buttons -->
           <div class="form-buttons">
             <button 
               type="button" 
@@ -542,6 +565,7 @@ class EmployeeFormPage extends connect(LitElement) {
         </form>
       </div>
       
+      <!-- Confirmation dialog -->
       ${this._showConfirmDialog ? html`
         <confirmation-dialog
           title="${this._isEditMode ? t('confirmation.updateEmployee') : t('confirmation.addEmployee')}"
@@ -554,4 +578,5 @@ class EmployeeFormPage extends connect(LitElement) {
     }
 }
 
+// Register the custom element with the browser
 customElements.define('employee-form-page', EmployeeFormPage);

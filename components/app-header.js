@@ -1,16 +1,27 @@
 // src/components/app-header.js
-import { LitElement, html, css } from 'lit';
-import { navigateTo } from "../router.js";
-import { t } from '../localization/translations.js';
+import { LitElement, html, css } from 'lit'; // Importing core LitElement libraries
+import { navigateTo } from "../router.js"; // Import navigation function
+import { t } from '../localization/translations.js'; // Import translation function
 
+/**
+ * AppHeader Component
+ * A customizable header component built with LitElement
+ * Features:
+ * - Company logo and branding
+ * - Navigation to employees list
+ * - Button to add new employees
+ * - Language selector with dropdown (supports English and Turkish)
+ */
 export class AppHeader extends LitElement {
+    // Define reactive properties
     static get properties() {
         return {
-            currentLanguage: { type: String },
-            isLanguageDropdownOpen: { type: Boolean }
+            currentLanguage: { type: String }, // Tracks the currently selected language
+            isLanguageDropdownOpen: { type: Boolean } // Tracks dropdown open/closed state
         };
     }
 
+    // Component styling using CSS
     static get styles() {
         return css`
       :host {
@@ -20,6 +31,7 @@ export class AppHeader extends LitElement {
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
       
+      /* Container for the entire header */
       .header-container {
         display: flex;
         justify-content: space-between;
@@ -28,6 +40,7 @@ export class AppHeader extends LitElement {
         margin: 0 auto;
       }
       
+      /* Logo section styling */
       .logo-section {
         display: flex;
         align-items: center;
@@ -56,13 +69,14 @@ export class AppHeader extends LitElement {
         color: #333;
       }
       
+      /* Actions section containing navigation and buttons */
       .actions {
         display: flex;
         align-items: center;
         gap: 20px; /* Increased gap between buttons */
       }
       
-      /* Improved employees link button */
+      /* Employees link styling with hover effects */
       .employees-link {
         display: flex;
         align-items: center;
@@ -87,7 +101,7 @@ export class AppHeader extends LitElement {
         height: 22px; /* Larger icon */
       }
       
-      /* Enhanced add button */
+      /* Add employee button with enhanced styling */
       .add-button {
         background-color: #ff6200; /* Changed to filled button for better visibility */
         color: white; /* Changed text to white for contrast */
@@ -114,7 +128,7 @@ export class AppHeader extends LitElement {
         line-height: 1;
       }
       
-      /* Language dropdown styles */
+      /* Language dropdown styling and positioning */
       .language-dropdown {
         position: relative;
         cursor: pointer;
@@ -159,7 +173,7 @@ export class AppHeader extends LitElement {
         margin-right: 8px;
       }
       
-      /* Responsive adjustments */
+      /* Responsive adjustments for mobile devices */
       @media (max-width: 768px) {
         .header-container {
           flex-wrap: wrap;
@@ -178,6 +192,12 @@ export class AppHeader extends LitElement {
     `;
     }
 
+    /**
+     * Constructor initializes default state
+     * - Sets default language from localStorage or falls back to English
+     * - Initializes dropdown as closed
+     * - Binds event handlers to maintain correct 'this' context
+     */
     constructor() {
         super();
         this.currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
@@ -185,16 +205,29 @@ export class AppHeader extends LitElement {
         this._onClickOutside = this._onClickOutside.bind(this);
     }
 
+    /**
+     * Lifecycle method when element is added to DOM
+     * - Adds click event listener to close dropdown when clicking outside
+     */
     connectedCallback() {
         super.connectedCallback();
         document.addEventListener('click', this._onClickOutside);
     }
 
+    /**
+     * Lifecycle method when element is removed from DOM
+     * - Removes event listeners to prevent memory leaks
+     */
     disconnectedCallback() {
         super.disconnectedCallback();
         document.removeEventListener('click', this._onClickOutside);
     }
 
+    /**
+     * Handles clicks outside the language dropdown
+     * - Closes the dropdown when user clicks elsewhere on the page
+     * @param {Event} event - The click event
+     */
     _onClickOutside(event) {
         const path = event.composedPath();
         if (this.isLanguageDropdownOpen && !path.includes(this.renderRoot.querySelector('.language-dropdown'))) {
@@ -202,15 +235,32 @@ export class AppHeader extends LitElement {
         }
     }
 
+    /**
+     * Navigates to the home page
+     * - Used when clicking on the logo
+     */
     _navigateHome() {
         navigateTo('/');
     }
 
+    /**
+     * Toggles the language dropdown visibility
+     * - Prevents event propagation to avoid triggering outside click handler
+     * @param {Event} e - The click event
+     */
     _toggleLanguageDropdown(e) {
         e.stopPropagation();
         this.isLanguageDropdownOpen = !this.isLanguageDropdownOpen;
     }
 
+    /**
+     * Changes the application language
+     * - Stores preference in localStorage
+     * - Updates HTML document lang attribute
+     * - Dispatches custom event for app-wide notification
+     * - Reloads the page to apply changes
+     * @param {string} lang - The language code to change to (e.g., 'en', 'tr')
+     */
     _changeLanguage(lang) {
         if (this.currentLanguage !== lang) {
             // Store the language preference in localStorage
@@ -237,6 +287,11 @@ export class AppHeader extends LitElement {
         }
     }
 
+    /**
+     * Gets the URL for a language's flag image
+     * @param {string} lang - The language code
+     * @returns {string} - URL to the flag image
+     */
     getFlagUrl(lang) {
         // You can replace these with actual flag images
         const flags = {
@@ -246,6 +301,11 @@ export class AppHeader extends LitElement {
         return flags[lang] || flags.en;
     }
 
+    /**
+     * Gets the display name for a language
+     * @param {string} lang - The language code
+     * @returns {string} - Localized name of the language
+     */
     getLanguageName(lang) {
         const names = {
             en: 'English',
@@ -254,13 +314,21 @@ export class AppHeader extends LitElement {
         return names[lang] || 'English';
     }
 
+    /**
+     * Handles navigation to the add employee page
+     */
     _handleAddEmployee() {
         navigateTo('/add');
     }
 
+    /**
+     * Renders the component template
+     * @returns {TemplateResult} - LitElement template result
+     */
     render() {
         return html`
             <div class="header-container">
+                <!-- Logo section - navigates home when clicked -->
                 <div class="logo-section" @click="${this._navigateHome}">
                     <div class="logo-icon">
                         <img src="/ing.webp" alt="ING Logo">
@@ -269,6 +337,7 @@ export class AppHeader extends LitElement {
                 </div>
 
                 <div class="actions">
+                    <!-- Employees navigation link -->
                     <div class="employees-link" @click="${this._navigateHome}">
                         <svg class="employees-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22"
                              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -281,16 +350,19 @@ export class AppHeader extends LitElement {
                         ${t('employees')}
                     </div>
 
+                    <!-- Add employee button -->
                     <button class="add-button" @click="${this._handleAddEmployee}">
                         <span>+</span> ${t('add_employees')}
                     </button>
 
+                    <!-- Language selector dropdown -->
                     <div class="language-dropdown" @click="${(e) => e.stopPropagation()}">
                         <div class="current-language" @click="${this._toggleLanguageDropdown}">
                             <img class="flag-icon" src="${this.getFlagUrl(this.currentLanguage)}"
                                  alt="${this.getLanguageName(this.currentLanguage)}">
                         </div>
 
+                        <!-- Language options that appear when dropdown is open -->
                         <div class="language-options ${this.isLanguageDropdownOpen ? 'open' : ''}">
                             <div class="language-option" @click="${() => this._changeLanguage('en')}">
                                 <img class="flag-icon" src="${this.getFlagUrl('en')}" alt="English">
@@ -308,4 +380,5 @@ export class AppHeader extends LitElement {
     }
 }
 
+// Register the custom element with the browser
 customElements.define('app-header', AppHeader);

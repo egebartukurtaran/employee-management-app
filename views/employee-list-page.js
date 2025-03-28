@@ -1,3 +1,4 @@
+// src/views/employee-list-page.js
 import { LitElement, html, css } from 'lit';
 import { connect } from '../store/connect.js';
 import { store } from '../store';
@@ -7,7 +8,9 @@ import '../components/search-input.js';
 import '../components/confirmation-dialog.js';
 import { t } from '../localization/translations.js';
 import {navigateTo} from "../router";
+
 class EmployeeListPage extends connect(LitElement) {
+    // Define reactive properties
     static get properties() {
         return {
             _employees: { type: Array },
@@ -16,7 +19,7 @@ class EmployeeListPage extends connect(LitElement) {
             _viewMode: { type: String },
             _showDeleteDialog: { type: Boolean },
             _employeeToDelete: { type: Object },
-            _searchTerm: { type: String }, // Add this
+            _searchTerm: { type: String },
             _language: { type: String }
         };
     }
@@ -29,8 +32,8 @@ class EmployeeListPage extends connect(LitElement) {
         this._viewMode = 'table';
         this._showDeleteDialog = false;
         this._employeeToDelete = null;
-        this._searchTerm = ''; // Initialize search term
-        this._language = localStorage.getItem('preferredLanguage') || 'en'; // Get from localStorage or default to English
+        this._searchTerm = '';
+        this._language = localStorage.getItem('preferredLanguage') || 'en';
 
         // Set the document language attribute
         document.documentElement.lang = this._language;
@@ -46,13 +49,11 @@ class EmployeeListPage extends connect(LitElement) {
         window.removeEventListener('language-changed', this._onLanguageChanged);
     }
 
-// Handle language change events
+    // Handle language change events
     _onLanguageChanged(event) {
         this._language = event.detail.language;
         this.requestUpdate();
     }
-
-
 
     static get styles() {
         return css`
@@ -63,7 +64,6 @@ class EmployeeListPage extends connect(LitElement) {
             padding: 16px;
           }
 
-          /* Update these styles in your static get styles() method */
           .page-header {
             display: flex;
             justify-content: space-between;
@@ -128,10 +128,9 @@ class EmployeeListPage extends connect(LitElement) {
             border: 1px solid #ddd;
             border-radius: 4px;
             overflow: hidden;
-            margin-left: 16px; /* Reduced from 40px to 16px */
+            margin-left: 16px;
           }
 
-          /* Responsive styles */
           @media (max-width: 768px) {
             .page-header {
               flex-direction: column;
@@ -187,7 +186,6 @@ class EmployeeListPage extends connect(LitElement) {
             height: 20px;
           }
 
-          /* Table styles */
           .table-container {
             width: 100%;
             max-width: 100%;
@@ -197,12 +195,11 @@ class EmployeeListPage extends connect(LitElement) {
             margin-bottom: 30px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
-            padding: 10px; /* Added overall padding to the table container */
+            padding: 10px;
           }
 
-          /* Increased cell padding */
           th, td {
-            padding: 12px 10px; /* Increased from 10px 14px */
+            padding: 12px 10px;
             text-align: center;
             border-bottom: 1px solid #f2f2f2;
             font-size: 14px;
@@ -211,17 +208,15 @@ class EmployeeListPage extends connect(LitElement) {
             text-overflow: ellipsis;
           }
 
-          /* Table headers with increased padding */
           th {
             color: #ff6200;
             font-weight: lighter;
             font-size: 14px;
             white-space: nowrap;
-            padding-top: 20px; /* Extra top padding for headers */
-            padding-bottom: 20px; /* Extra bottom padding for headers */
+            padding-top: 20px;
+            padding-bottom: 20px;
           }
 
-          /* Ensure first and last column have extra horizontal padding */
           th:first-child, td:first-child {
             padding-left: 24px;
           }
@@ -230,12 +225,10 @@ class EmployeeListPage extends connect(LitElement) {
             padding-right: 24px;
           }
 
-          /* Increased vertical spacing between rows */
           tr {
-            height: 60px; /* Set minimum height for rows */
+            height: 60px;
           }
 
-          /* Add additional whitespace between table and pagination */
           .table-container + pagination-control {
             margin-top: 30px;
           }
@@ -287,7 +280,6 @@ class EmployeeListPage extends connect(LitElement) {
             font-style: italic;
           }
 
-          /* List/Card styles */
           .list-wrapper {
             background-color: white;
             border-radius: 8px;
@@ -366,7 +358,6 @@ class EmployeeListPage extends connect(LitElement) {
             color: #ff6200;
           }
 
-          /* Pagination styles */
           .pagination {
             display: flex;
             justify-content: center;
@@ -397,7 +388,6 @@ class EmployeeListPage extends connect(LitElement) {
             color: #ff6200;
           }
 
-          /* Responsive styles */
           @media (max-width: 768px) {
             .page-header {
               flex-direction: column;
@@ -430,13 +420,11 @@ class EmployeeListPage extends connect(LitElement) {
         `;
     }
 
-
-
+    // Update from store state
     stateChanged(state) {
-        // Get the search term from state
         this._searchTerm = state.ui.searchTerm || '';
 
-        // Get paginated employees from state
+        // Get paginated employees
         const filteredEmployees = this._getFilteredEmployees(state);
         const itemsPerPage = 10;
         const startIndex = (state.ui.currentPage - 1) * itemsPerPage;
@@ -447,6 +435,7 @@ class EmployeeListPage extends connect(LitElement) {
         this._viewMode = state.ui.viewMode || 'table';
     }
 
+    // Filter employees based on search term
     _getFilteredEmployees(state) {
         const { searchTerm } = state.ui;
         if (!searchTerm) return state.employees;
@@ -459,24 +448,23 @@ class EmployeeListPage extends connect(LitElement) {
         );
     }
 
-    // Fix the search handler
-
+    // Handle pagination changes
     _handlePageChange(e) {
         store.dispatch(UIActions.setCurrentPage(e.detail));
     }
 
-
-
+    // Navigate to edit page
     _handleEditEmployee(employee) {
-        // Use the navigateTo function with the correct path format
         navigateTo(`/edit/${employee.id}`);
     }
 
+    // Show delete confirmation dialog
     _confirmDeleteEmployee(employee) {
         this._employeeToDelete = employee;
         this._showDeleteDialog = true;
     }
 
+    // Handle delete confirmation
     _handleDeleteConfirm() {
         if (this._employeeToDelete) {
             store.dispatch(EmployeeActions.delete(this._employeeToDelete.id));
@@ -485,18 +473,20 @@ class EmployeeListPage extends connect(LitElement) {
         }
     }
 
+    // Handle delete cancellation
     _handleDeleteCancel() {
         this._showDeleteDialog = false;
         this._employeeToDelete = null;
     }
 
-    // Add this method to handle input changes and trigger search automatically
+    // Update search term
     _handleSearchInput(e) {
         this._searchTerm = e.target.value;
         store.dispatch(UIActions.setSearchTerm(this._searchTerm));
     }
 
-    renderListIcon() {
+    // List view icon
+    _renderListIcon() {
         return html`
             <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -509,7 +499,8 @@ class EmployeeListPage extends connect(LitElement) {
         `;
     }
 
-    renderGridIcon() {
+    // Grid view icon
+    _renderGridIcon() {
         return html`
             <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="3" width="7" height="7"></rect>
@@ -520,6 +511,14 @@ class EmployeeListPage extends connect(LitElement) {
         `;
     }
 
+    // Change view mode
+    _handleViewChange(mode) {
+        if (this._viewMode !== mode) {
+            store.dispatch(UIActions.setViewMode(mode));
+        }
+    }
+
+    // Main render method
     render() {
         return html`
     <div class="page-header">
@@ -574,41 +573,28 @@ class EmployeeListPage extends connect(LitElement) {
     `;
     }
 
-
-
-    _renderListIcon() {
+    // Render edit icon
+    _renderEditIcon() {
         return html`
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="8" y1="6" x2="21" y2="6"></line>
-            <line x1="8" y1="12" x2="21" y2="12"></line>
-            <line x1="8" y1="18" x2="21" y2="18"></line>
-            <line x1="3" y1="6" x2="3.01" y2="6"></line>
-            <line x1="3" y1="12" x2="3.01" y2="12"></line>
-            <line x1="3" y1="18" x2="3.01" y2="18"></line>
-        </svg>
-    `;
+    <svg class="icon edit-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+    </svg>
+  `;
     }
 
-    _renderGridIcon() {
+    // Render delete icon
+    _renderDeleteIcon() {
         return html`
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="7" height="7"></rect>
-            <rect x="14" y="3" width="7" height="7"></rect>
-            <rect x="14" y="14" width="7" height="7"></rect>
-            <rect x="3" y="14" width="7" height="7"></rect>
-        </svg>
-    `;
+    <svg class="icon delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="3 6 5 6 21 6"></polyline>
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+      <line x1="10" y1="11" x2="10" y2="17"></line>
+      <line x1="14" y1="11" x2="14" y2="17"></line>
+    </svg>
+  `;
     }
 
-// Add this method to handle view changes
-    _handleViewChange(mode) {
-        if (this._viewMode !== mode) {
-            store.dispatch(UIActions.setViewMode(mode));
-        }
-    }
-
-
-
+    // Render table view
     _renderTableView() {
         return html`
     <div class="table-container">
@@ -666,31 +652,13 @@ class EmployeeListPage extends connect(LitElement) {
   `;
     }
 
-    _renderEditIcon() {
-        return html`
-    <svg class="icon edit-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-    </svg>
-  `;
-    }
-
-    _renderDeleteIcon() {
-        return html`
-    <svg class="icon delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="3 6 5 6 21 6"></polyline>
-      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-      <line x1="10" y1="11" x2="10" y2="17"></line>
-      <line x1="14" y1="11" x2="14" y2="17"></line>
-    </svg>
-  `;
-    }
-
+    // Render card/list view
     _renderListView() {
         return html`
             <div class="list-wrapper">
                 <div class="list-container">
                     ${this._employees.length > 0 ?
-                            this._employees.map(employee => html`
+            this._employees.map(employee => html`
                                 <div class="employee-card">
                                     <div class="card-header">
                                         <h3>${employee.firstName} ${employee.lastName}</h3>
@@ -727,34 +695,27 @@ class EmployeeListPage extends connect(LitElement) {
                                     </div>
                                 </div>
                             `) :
-                            html`<div class="empty-message">${t('list.empty')}</div>`
-                    }
+            html`<div class="empty-message">${t('list.empty')}</div>`
+        }
                 </div>
             </div>
         `;
     }
 
-// Handle selecting all rows (stub method)
-    // Handle selecting all rows
+    // Handle select all checkbox
     _handleSelectAll(e) {
         const checked = e.target.checked;
-
-        // Get all row checkboxes in the table
         const checkboxes = this.shadowRoot.querySelectorAll('tbody input[type="checkbox"]');
-
-        // Set each checkbox to match the "select all" checkbox state
         checkboxes.forEach(checkbox => {
             checkbox.checked = checked;
         });
-
         console.log('Select all:', checked);
     }
 
-// Handle selecting single row (stub method)
+    // Handle individual row selection
     _handleSelectRow(e) {
         const checked = e.target.checked;
         const value = e.target.value;
-        // Implement select row functionality
         console.log('Select row:', value, checked);
     }
 }

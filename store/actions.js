@@ -1,4 +1,4 @@
-// src/store/actions.js
+// Action type constants used throughout the app
 export const ActionTypes = {
     // Employee actions
     ADD_EMPLOYEE: 'ADD_EMPLOYEE',
@@ -11,6 +11,7 @@ export const ActionTypes = {
     SET_VIEW_MODE: 'SET_VIEW_MODE'
 };
 
+// Action creators for employee management operations
 export const EmployeeActions = {
     add: (employee) => ({
         type: ActionTypes.ADD_EMPLOYEE,
@@ -28,6 +29,7 @@ export const EmployeeActions = {
     })
 };
 
+// Action creators for UI state changes
 export const UIActions = {
     setSearchTerm: (term) => ({
         type: ActionTypes.SET_SEARCH_TERM,

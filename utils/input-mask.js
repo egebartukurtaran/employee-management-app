@@ -1,9 +1,5 @@
 // src/utils/input-mask.js
 
-/**
- * A simple input masking utility for form fields
- */
-
 // Date mask in DD/MM/YYYY format
 export function dateMask(input) {
     // Remove any non-digit characters
@@ -31,7 +27,7 @@ export function dateMask(input) {
 // Phone mask in +(90) 532 123 45 67 format
 // Updated phone mask function to format as +(90) 539 850 02 44
 
-// Phone mask in +(90) 539 850 02 44 format
+// Phone mask formatter for Turkish phone number format
 export function phoneMask(input) {
     // Remove any non-digit characters
     let value = input.replace(/\D/g, '');
@@ -39,26 +35,27 @@ export function phoneMask(input) {
     // Start with +
     let result = '+';
 
-    // Add country code in parentheses
+    // Format: +(90) 539 850 02 44
     if (value.length > 0) {
+        // Country code in parentheses
         result += '(' + value.substring(0, Math.min(value.length, 2)) + ')';
 
-        // Add first three digits
+        // Area code (539)
         if (value.length > 2) {
             result += ' ' + value.substring(2, Math.min(value.length, 5));
         }
 
-        // Add next three digits
+        // First part of number (850)
         if (value.length > 5) {
             result += ' ' + value.substring(5, Math.min(value.length, 8));
         }
 
-        // Add next two digits
+        // Second part of number (02)
         if (value.length > 8) {
             result += ' ' + value.substring(8, Math.min(value.length, 10));
         }
 
-        // Add last two digits
+        // Last part of number (44)
         if (value.length > 10) {
             result += ' ' + value.substring(10, Math.min(value.length, 12));
         }
@@ -67,9 +64,10 @@ export function phoneMask(input) {
     return result;
 }
 
-// Real-time validation helpers
+// Input validators for form fields
 export const validators = {
-    // Date validation for DD/MM/YYYY format
+    // Validates date in DD/MM/YYYY format
+    // Checks format and logical date validity (month range, days in month)
     date: (value) => {
         if (!value) return false;
 
@@ -95,13 +93,15 @@ export const validators = {
         return true;
     },
 
-    // Phone validation for +(90) 532 123 45 67 format
+    // Validates phone number format
+    // Must match the pattern created by phoneMask
     phone: (value) => {
         if (!value) return false;
         return /^\+\(\d{2}\)\s\d{3}\s\d{3}\s\d{2}\s\d{2}$/.test(value);
     },
 
-    // Email validation
+    // Validates email format
+    // Basic check for user@domain.tld pattern
     email: (value) => {
         if (!value) return false;
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
